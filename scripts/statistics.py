@@ -9,13 +9,13 @@ Code inspired by implementation at https://github.com/danielnbarbosa/drlnd_colla
 Statistics to track agent performance.
 """
 import time
+import socket
 from collections import deque
 import numpy as np
 from tensorboardX import SummaryWriter
 
-
 class Stats():
-    def __init__(self):
+    def __init__(self, timestamp):
         self.score = None
         self.avg_score = None
         self.std_dev = None
@@ -25,7 +25,8 @@ class Stats():
         self.best_avg_score = -np.Inf            # best score for a single episode
         self.time_start = time.time()            # track cumulative wall time
         self.total_steps = 0                     # track cumulative steps taken
-        self.writer = SummaryWriter()
+        log_dir = f"../results/{timestamp}_{socket.gethostname()}"
+        self.writer = SummaryWriter(log_dir=log_dir)
 
     def update(self, steps, rewards, i_episode):
         """Update stats after each episode."""
@@ -49,7 +50,7 @@ class Stats():
                       actor_loss_01, actor_loss_02,
                       noise_val_01, noise_val_02,
                       rewards_01, rewards_02):
-        common_stats = 'Episode: {:5}   Avg: {:8.3f}   BestAvg: {:8.3f}   σ: {:8.3f}  |  Steps: {:8}   Reward: {:8.3f}  |  '.format(i_episode, self.avg_score, self.best_avg_score, self.std_dev, steps, self.score)
+        common_stats = f"Episode: {i_episode:5}\tAvg: {self.avg_score:8.3f}\tBestAvg: {self.best_avg_score:8.3f}\tσ: {self.std_dev:8.3f}\tSteps: {steps:8}\tReward: {self.score:8.3f}"
         print('\r' + common_stats + stats_format.format(buffer_len, noise_weight), end="")
         # log lots of stuff to tensorboard
         self.writer.add_scalar('global/reward', self.score, i_episode)
@@ -70,9 +71,9 @@ class Stats():
 
     def print_epoch(self, i_episode, stats_format, *args):
         n_secs = int(time.time() - self.time_start)
-        common_stats = 'Episode: {:5}   Avg: {:8.3f}   BestAvg: {:8.3f}   σ: {:8.3f}  |  Steps: {:8}   Secs: {:6}      |  '.format(i_episode, self.avg_score, self.best_avg_score, self.std_dev, self.total_steps, n_secs)
+        common_stats = f"Episode: {i_episode:5}\tAvg: {self.avg_score:8.3f}\tBestAvg: {self.best_avg_score:8.3f}\tσ: {self.std_dev:8.3f}\tSteps: {self.total_steps:8}\tSecs: {n_secs:6}"
         print('\r' + common_stats + stats_format.format(*args))
 
     def print_solve(self, i_episode, stats_format, *args):
         self.print_epoch(i_episode, stats_format, *args)
-        print('\nSolved in {:d} episodes!'.format(i_episode-100))
+        print(f"\nSolved in {i_episode:d} episodes!")

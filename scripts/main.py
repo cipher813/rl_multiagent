@@ -6,23 +6,23 @@ January 2019
 
 Code inspired by implmentation at https://github.com/danielnbarbosa/drlnd_collaboration_and_competition
 """
+import re
 import torch
+import datetime
 import numpy as np
 from statistics import Stats
 from environment import UnityMLVectorMultiAgent
 from agents.MADDPG import MADDPG
 
 def train(environment, agent, n_episodes=10000, max_t=1000, solve_score=0.5):
-    stats = Stats()
+    timestamp = re.sub(r"\D","",str(datetime.datetime.now()))[:12]
+    stats = Stats(timestamp)
     stats_format = "Buffer: {:6}\tNoiseW: {:.4}"
 
 
     for i_episode in range(1, n_episodes+1):
         rewards = []
         state = environment.reset()
-#         env_info = env.reset(train_mode=False)[brain_name]     # reset the environment
-#         states = env_info.vector_observations                  # get the current state (for each agent)
-#         scores = np.zeros(num_agents)                          # initialize the score (for each agent)
         for t in range(max_t):
             action = agent.act(state)
             next_state, reward, done = environment.step(action)
@@ -48,9 +48,9 @@ def train(environment, agent, n_episodes=10000, max_t=1000, solve_score=0.5):
                             per_agent_rewards[0], per_agent_rewards[1])
 
         # every epoch (100 episodes)
-        if i_episode % 100 == 0:
+        if i_episode % 500 == 0:
             stats.print_epoch(i_episode, stats_format, buffer_len, agent.noise_weight)
-            save_name = f"../checkpoints/episode_{i_episode}"
+            save_name = f"../results/{timestamp}_episode_{i_episode}"
             for i, save_agent in enumerate(agent.agents):
                 torch.save(save_agent.actor.state_dict(), save_name + str(i) + "_actor.pth")
                 torch.save(save_agent.critic.state_dict(), save_name + str(i) + "_critic.pth")
@@ -58,11 +58,11 @@ def train(environment, agent, n_episodes=10000, max_t=1000, solve_score=0.5):
         # if solved
         if stats.is_solved(i_episode, solve_score):
             stats.print_solve(i_episode, stats_format, buffer_len, agent.noise_weight)
-            save_name = "../checkpoints/solved_"
+            save_name = "../results/{timestamp}_solved"
             for i, save_agent in enumerate(agent.agents):
                 torch.save(save_agent.actor.state_dict(),save_name+str(i)+"_actor.pth")
                 torch.save(save_agent.critic.state_dict(),save_name+str(i)+"_critic.pth")
-            break 
+            break
 
 environment = UnityMLVectorMultiAgent()
 agent = MADDPG()
