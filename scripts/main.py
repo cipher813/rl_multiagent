@@ -19,7 +19,6 @@ def train(environment, agent, n_episodes=10000, max_t=1000, solve_score=0.5):
     stats = Stats(timestamp)
     stats_format = "Buffer: {:6}\tNoiseW: {:.4}"
 
-
     for i_episode in range(1, n_episodes+1):
         rewards = []
         state = environment.reset()
