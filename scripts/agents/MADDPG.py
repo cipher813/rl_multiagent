@@ -394,6 +394,9 @@ class LowDim2x():
         self.critic_target = LowDimCritic(critic_input_size, seed).to(device)
 
         # output model architecture
-        print(self.actor)
+        # print(self.actor)
+        print("Architecture Summary: Actor\n")
         summary(self.actor, (state_size,))
-        print(self.critic)
+        # print(self.critic)
+        print("Architecture Summary: Critic\n")
+        summary(self.critic, (state_size,))

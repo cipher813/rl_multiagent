@@ -85,9 +85,9 @@ def train(PATH, environment, timestamp, n_episodes=10000, max_t=1000, score_thre
         save_name = f"../results/{timestamp}_episode_{i_episode}"
         if i_episode % 100 == 0:
             print(f'\rEpisode {i_episode}\tScore TAS/Mean/Max/Min: {total_average_score:.2f}/{mean_score:.2f}/{max_score:.2f}/{min_score:.2f}\t{calc_runtime(end-start)}')
-            for i, save_agent in enumerate(agent.agents):
-                torch.save(save_agent.actor.state_dict(), save_name + str(i) + "_actor.pth")
-                torch.save(save_agent.critic.state_dict(), save_name + str(i) + "_critic.pth")
+            for save_agent in agent.agents:
+                torch.save(save_agent.actor.state_dict(), save_name + "_actor.pth")
+                torch.save(save_agent.critic.state_dict(), save_name + "_critic.pth")
 
         if total_average_score>score_threshold:
             print(f"Solved in {i_episode} and {calc_runtime(end-start)}")
