@@ -398,5 +398,5 @@ class LowDim2x():
         print("Architecture Summary: Actor\n")
         summary(self.actor, (state_size,))
         # print(self.critic)
-        print("Architecture Summary: Critic\n")
-        summary(self.critic, (state_size,))
+        # print("Architecture Summary: Critic\n")
+        # summary(self.critic, (state_size,))
