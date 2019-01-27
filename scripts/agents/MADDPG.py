@@ -44,10 +44,12 @@ class MADDPG:
         self.noise_decay = noise_decay
         self.timestep = 0
         self.evaluation_only = evaluation_only
-        self.seed = random.seed(random_seed)
+        # self.seed = random.seed(random_seed)
 
         # create 2 agents, each with own actor and critic
         models = [LowDim2x(num_agents=num_agents) for _ in range(num_agents)]
+
+        # load file not implemented 
         self.agents = [DDPG(0,models[0],load_file=None),DDPG(1, models[1], load_file=None)]
 
         # shared replay buffer

@@ -14,11 +14,13 @@ import time
 import socket
 import datetime
 import numpy as np
+from collections import deque
 
 import torch
 # from unityagents import UnityEnvironment
-from environment import Unity_Environment
+from environment import Unity_Multiagent
 from agents.MADDPG import MADDPG
+import statistics
 
 PATH = "/Volumes/BC_Clutch/Dropbox/DeepRLND/rl_multiagent/"
 timestamp = re.sub(r"\D","",str(datetime.datetime.now()))[:12]
@@ -31,10 +33,10 @@ def calc_runtime(seconds):
     s = int(round(seconds - m*60,0))
     return "{:02d}:{:02d}:{:02d}".format(h,m,s)
 
-def train(PATH, environment, timestamp, n_episodes=10000, max_t=1000, score_threshold=0.5):
+def train(PATH, environment, agent, timestamp, n_episodes=10000, max_t=1000, score_threshold=0.5):
     """Train with MADDPG."""
     start = time.time()
-    total_scores = []
+    total_scores = deque(maxlen=100)
     # env_path = PATH + f"data/{env_path}"
     # env = UnityEnvironment(file_name=env_path)
     # brain_name = env.brain_names[0]
@@ -44,7 +46,10 @@ def train(PATH, environment, timestamp, n_episodes=10000, max_t=1000, score_thre
 #     states = env_info.vector_observations
 #     state_size = states.shape[1]
 #     action_size = brain.vector_action_space_size
-    agent = MADDPG()
+    # agent = MADDPG()
+    stats = statistics.Stats()
+    stats_format = "Buffer: {:6} NoiseW: {:.4}"
+
     for i_episode in range(1, n_episodes+1):
         scores = []
         states = environment.reset()
@@ -70,33 +75,52 @@ def train(PATH, environment, timestamp, n_episodes=10000, max_t=1000, score_thre
 #             scores += env_info.rewards
             if np.any(dones):
                 break
-        score_length = len(total_scores) if len(total_scores)<100 else 100
-        mean_score = np.mean(scores)
-        min_score = np.min(scores)
-        max_score = np.max(scores)
-        total_scores.append(mean_score)
-        total_average_score = np.mean(total_scores[-score_length:])
-        end = time.time()
-        print(f'\rEpisode {i_episode}\tScore TAS/Mean/Max/Min: {total_average_score:.2f}/{mean_score:.2f}/{max_score:.2f}/{min_score:.2f}\t{calc_runtime(end-start)}',end=" ")
+        # every episode
+        buffer_len = len(agent.memory)
+
+        # score_length = len(total_scores) if len(total_scores)<100 else 100
+        # score_length = np.min(len(total_scores),100)
+        # mean_score = np.mean(scores)
+        # min_score = np.min(scores)
+        # max_score = np.max(scores)
+        # total_scores.append(mean_score)
+        # # total_average_score = np.mean(total_scores[-score_length:])
+        # total_average_score = np.mean(total_scores)
+        # end = time.time()
+        # print(f'\rEpisode {i_episode}\tScore TAS/Mean/Max/Min: {total_average_score:.2f}/{mean_score:.2f}/{max_score:.2f}/{min_score:.2f}\t{calc_runtime(end-start)}',end=" ")
         per_agent_rewards = []
         for i in range(agent.num_agents):
-            per_agent_rewards.append(np.sum(rewards[i]))
+            per_agent_reward = 0
+            for step in rewards:
+                per_agent_reward += step[i]
+            per_agent_rewards.append(per_agent_reward)
+        stats.update(t, [np.max(per_agent_rewards)], i_episode) # use max over all agents as episode reward
+        stats.print_episode(i_episode, t, stats_format, buffer_len, agent.noise_weight,
+                            agent.agents[0].critic_loss, agent.agents[1].critic_loss,
+                            agent.agents[0].actor_loss, agent.agents[1].actor_loss,
+                            agent.agents[0].noise_val, agent.agents[1].noise_val,
+                            per_agent_rewards[0],per_agent_rewards[1])
 
-        save_name = f"../results/{timestamp}_episode_{i_episode}"
         if i_episode % 100 == 0:
+            stats.print_epoch(i_episode, stats_format, buffer_len, agent.noise_weight)
+            save_name = f"../results/{timestamp}_episode_{i_episode}"
             print(f'\rEpisode {i_episode}\tScore TAS/Mean/Max/Min: {total_average_score:.2f}/{mean_score:.2f}/{max_score:.2f}/{min_score:.2f}\t{calc_runtime(end-start)}')
-            for save_agent in agent.agents:
-                torch.save(save_agent.actor.state_dict(), save_name + "_actor.pth")
-                torch.save(save_agent.critic.state_dict(), save_name + "_critic.pth")
+            for i,save_agent in enumerate(agent.agents):
+                torch.save(save_agent.actor.state_dict(), save_name + f"A{i}_actor.pth")
+                torch.save(save_agent.critic.state_dict(), save_name + f"A{i}_critic.pth")
 
-        if total_average_score>score_threshold:
+        # if total_average_score>score_threshold:
+        if stats.is_solved_(i_episode, score_threshold):
+            stats.print_solve(i_episode, stats_format, buffer_len, agent.noise_weight)
+            save_name = f"../results/{timestamp}_solved_episode_{i_episode}"
             print(f"Solved in {i_episode} and {calc_runtime(end-start)}")
             for i, save_agent in enumerate(agent.agents):
-                torch.save(save_agent.actor.state_dict(), save_name + "solved_" + str(i) + "_actor.pth")
-                torch.save(save_agent.critic.state_dict(), save_name + "solved_" + str(i) + "_critic.pth")
+                torch.save(save_agent.actor.state_dict(), save_name + f"A{i}_actor.pth")
+                torch.save(save_agent.critic.state_dict(), save_name + f"A{i}_critic.pth")
             break
-    env.close()
-    return total_scores
+    # env.close()
+    # return total_scores
 
-environment = Unity_Environment(evaluation_only=False)
-train(PATH, environment, timestamp)
+environment = Unity_Multiagent(evaluation_only=False)
+agent = MADDPG()
+train(PATH, environment, agent timestamp)

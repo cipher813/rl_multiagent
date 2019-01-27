@@ -11,7 +11,7 @@ Reimplementation of environment class.
 import platform
 from unityagents import UnityEnvironment
 
-class Unity_Environment():
+class Unity_Multiagent():
     """Implementation of environment class."""
     def __init__(self, evaluation_only=False, seed=0):
         """Load platform specific file and initialize environment."""
@@ -19,7 +19,7 @@ class Unity_Environment():
         if os=="Darwin":
             fn = "Tennis.app"
         elif os == "Linux":
-            fn = "Tennis_Linux/Tennis.x86_64"
+            fn = "Tennis_Linux_NoVis/Tennis.x86_64" # NoVis/Headless required for cloud training
         else:
             print("Specified platform not available.")
             raise NotImplementedError
