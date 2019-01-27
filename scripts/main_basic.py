@@ -91,7 +91,7 @@ def train(PATH, environment, agent, timestamp, n_episodes=10000, max_t=1000, sco
         per_agent_rewards = []
         for i in range(agent.num_agents):
             per_agent_reward = 0
-            for step in rewards:
+            for step in scores:
                 per_agent_reward += step[i]
             per_agent_rewards.append(per_agent_reward)
         stats.update(t, [np.max(per_agent_rewards)], i_episode) # use max over all agents as episode reward
@@ -104,16 +104,16 @@ def train(PATH, environment, agent, timestamp, n_episodes=10000, max_t=1000, sco
         if i_episode % 100 == 0:
             stats.print_epoch(i_episode, stats_format, buffer_len, agent.noise_weight)
             save_name = f"../results/{timestamp}_episode_{i_episode}"
-            print(f'\rEpisode {i_episode}\tScore TAS/Mean/Max/Min: {total_average_score:.2f}/{mean_score:.2f}/{max_score:.2f}/{min_score:.2f}\t{calc_runtime(end-start)}')
+            # print(f'\rEpisode {i_episode}\tScore TAS/Mean/Max/Min: {total_average_score:.2f}/{mean_score:.2f}/{max_score:.2f}/{min_score:.2f}\t{calc_runtime(end-start)}')
             for i,save_agent in enumerate(agent.agents):
                 torch.save(save_agent.actor.state_dict(), save_name + f"A{i}_actor.pth")
                 torch.save(save_agent.critic.state_dict(), save_name + f"A{i}_critic.pth")
 
         # if total_average_score>score_threshold:
-        if stats.is_solved_(i_episode, score_threshold):
+        if stats.is_solved(i_episode, score_threshold):
             stats.print_solve(i_episode, stats_format, buffer_len, agent.noise_weight)
             save_name = f"../results/{timestamp}_solved_episode_{i_episode}"
-            print(f"Solved in {i_episode} and {calc_runtime(end-start)}")
+            # print(f"Solved in {i_episode} and {calc_runtime(end-start)}")
             for i, save_agent in enumerate(agent.agents):
                 torch.save(save_agent.actor.state_dict(), save_name + f"A{i}_actor.pth")
                 torch.save(save_agent.critic.state_dict(), save_name + f"A{i}_critic.pth")
@@ -123,4 +123,4 @@ def train(PATH, environment, agent, timestamp, n_episodes=10000, max_t=1000, sco
 
 environment = Unity_Multiagent(evaluation_only=False)
 agent = MADDPG()
-train(PATH, environment, agent timestamp)
+train(PATH, environment, agent, timestamp)
