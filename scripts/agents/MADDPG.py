@@ -1,5 +1,5 @@
 """
-Project 3: Multiagent
+Project 3: Multiagent Collaboration and Competition
 Udacity Deep Reinforcement Learning Nanodegree
 Brian McMahon
 January 2019
@@ -49,7 +49,7 @@ class MADDPG:
         # create 2 agents, each with own actor and critic
         models = [LowDim2x(num_agents=num_agents) for _ in range(num_agents)]
 
-        # load file not implemented 
+        # id, model. Load file not implemented
         self.agents = [DDPG(0,models[0],load_file=None),DDPG(1, models[1], load_file=None)]
 
         # shared replay buffer
@@ -141,22 +141,15 @@ class DDPG():
         # Actor Network (w/ Target Network)
         self.actor = model.actor
         self.actor_target = model.actor_target
-        # self.actor = Actor(state_size, action_size, random_seed).to(device) #max_action,
-        # self.actor_target = Actor(state_size, action_size, random_seed).to(device) #max_action,
         self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=lr_actor)
 
         # Critic Network (w/ Target Network)
         self.critic = model.critic
         self.critic_target = model.critic_target
-        # self.critic = Critic(state_size, action_size, random_seed).to(device)
-        # self.critic_target = Critic(state_size, action_size, random_seed).to(device)
         self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=lr_critic, weight_decay=weight_decay)
 
         # Noise process
         self.noise = OUNoise(action_size, random_seed)
-
-        # Replay memory
-        # self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
 
     def act(self, state, noise_weight=1.0, add_noise=True): # act
         """Returns actions for given state as per current policy."""
@@ -219,8 +212,6 @@ class DDPG():
         self.actor_loss = actor_loss.item() # calculate policy gradient
 
         # minimize loss
-
-        # nn.utils.clip_grad_norm_(self.actor.parameters(),1)
         actor_loss.backward()
         self.actor_optimizer.step()
 
@@ -251,7 +242,6 @@ class OUNoise:
         self.mu = mu * np.ones(size)
         self.theta = theta
         self.sigma = sigma
-        # self.seed = random.seed(seed)
         self.reset()
 
     def reset(self):
@@ -281,17 +271,15 @@ class ReplayBuffer:
         self.memory = deque(maxlen=buffer_size)  # internal memory (deque)
         self.batch_size = batch_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
-        # self.seed = random.seed(seed)
 
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
         e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
 
-    def sample(self):#, alpha=ALPHA, beta=BETA):
+    def sample(self):
         """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
-
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
         actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).float().to(device)
         rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
@@ -311,7 +299,7 @@ def hidden_init(layer):
 class LowDimActor(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1u=400, fc2u=300): #max_action,
+    def __init__(self, state_size, action_size, seed, fc1u=400, fc2u=300):
         """Initialize parameters and build model.
         Params
         ======
@@ -336,7 +324,6 @@ class LowDimActor(nn.Module):
 
     def forward(self, state):
         """Build an actor (policy) network that maps states -> actions."""
-        # x = F.relu(self.bn1(self.fc1(state)))
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
         x = torch.tanh(self.fc3(x))
@@ -358,7 +345,6 @@ class LowDimCritic(nn.Module):
         super(LowDimCritic, self).__init__()
         self.seed = torch.manual_seed(seed)
         self.fc1 = nn.Linear(state_size, fc1u)
-        # self.bn1 = nn.BatchNorm1d(fc1u)
         self.fc2 = nn.Linear(fc1u, fc2u)
         self.fc3 = nn.Linear(fc2u, 1)
         self.reset_parameters()
@@ -371,7 +357,6 @@ class LowDimCritic(nn.Module):
 
     def forward(self, states, actions):
         """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
-        # xs = F.relu(self.bn1(self.fc1(state)))
         xs = torch.cat((states, actions),dim=1)
         x = F.relu(self.fc1(xs))
         x = F.relu(self.fc2(x))
@@ -396,9 +381,5 @@ class LowDim2x():
         self.critic_target = LowDimCritic(critic_input_size, seed).to(device)
 
         # output model architecture
-        # print(self.actor)
         print("Architecture Summary: Actor\n")
         summary(self.actor, (state_size,))
-        # print(self.critic)
-        # print("Architecture Summary: Critic\n")
-        # summary(self.critic, (state_size,))

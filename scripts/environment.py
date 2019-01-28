@@ -1,5 +1,5 @@
 """
-Project 3: Multiagent
+Project 3: Multiagent Collaboration and Competition
 Udacity Deep Reinforcement Learning Nanodegree
 Brian McMahon
 January 2019
