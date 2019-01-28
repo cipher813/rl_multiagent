@@ -16,9 +16,13 @@
 <a name="environment"></a>
 ## The Reinforcement Learning (RL) Environment
 
-For [Project 3](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet) of Udacity's [Deep Reinforcement Learning Nanodegree](https://github.com/udacity/deep-reinforcement-learning), we were tasked with teaching an agent to [...] using the "Tennis" environment configured by Udacity on [Unity's ML-Agents platform](https://github.com/Unity-Technologies/ml-agents).  
+For [Project 3](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet) of Udacity's [Deep Reinforcement Learning Nanodegree](https://github.com/udacity/deep-reinforcement-learning), we were tasked with teaching a pair of agents to play Tennis in an environment configured by Udacity on [Unity's ML-Agents platform](https://github.com/Unity-Technologies/ml-agents).  
 
-[...]
+According to the description provided by Udacity, two agents control rackets to bounce a ball over a net with the objective to keep a ball in play.  If the ball gets over the net, the agent receives a reward of +0.1.  If the ball hits the ground or goes out of bounds, the reward is then -0.1.  
+
+The observation space _for each agent_ consists of 8 variables pertaining to the position and velocity of ball and racket.  Two continuous actions are available, corresponding to movement towards/away from the net and jumping.  
+
+In order to solve the environment, agents must get an average score of +0.5 over the most recent 100 consecutive episodes, calculated by taking the maximum score over both agents per episode.  
 
 For further information, see Udacity's [project github repo](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet).
 

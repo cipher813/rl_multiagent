@@ -3,6 +3,7 @@ data/
 checkpoints/
 runs/
 working1/
+solved*/
 __pycache__/
 .ipynb_checkpoints/
 events.*

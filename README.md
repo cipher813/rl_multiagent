@@ -57,13 +57,12 @@ The key files in this repo include:
 Execute this script to train the MADDPG algorithm in the Unity Tennis environment.  
 
 [environment.py](https://github.com/cipher813/rl_multiagent/tree/master/scripts)
-[...]
+Contains the Unity_Multiagent environment class.
 
 [statistics.py](https://github.com/cipher813/rl_multiagent/tree/master/scripts)
-[...]
+Class to generate training statistics, including configuration of tensorboardX SummaryWriter.  
 
 [agents](https://github.com/cipher813/rl_multiagent/tree/master/scripts) folder
-[...]
 Contains the MADDPG algorithm.  See the accompanying [Report](https://github.com/cipher813/rl_multiagent/blob/master/report.md) for additional details on the agent implementation.
 
 To train the agent, first open main.py in your favorite text editor (ie `nano main.py` or `vi main.py`).  Make sure the path to the root repo folder is correct and that the proper environments and agents (policies) are selected.  Then, in the command line run:
@@ -71,13 +70,13 @@ To train the agent, first open main.py in your favorite text editor (ie `nano ma
 `source activate drlnd` # to activate python (conda) environment
 `python main.py` # to train the environment and agent (policy)
 
-To start tensorboard, in the root directory run `tensorboard --logdir=results`
+To start tensorboard, _in the root directory_ run `tensorboard --logdir=results`
 
 ### Notebooks
 
 [rl3_results.ipynb](https://github.com/cipher813/rl_multiagent/tree/master/notebooks)
 
-Charts the results from model results file.
+Generate chart of model results (per csv downloaded from TensorboardX).
 
 ### Results
 
