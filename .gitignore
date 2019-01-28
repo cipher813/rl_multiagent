@@ -2,7 +2,6 @@ archive/
 data/
 checkpoints/
 runs/
-results/
 working1/
 __pycache__/
 .ipynb_checkpoints/
