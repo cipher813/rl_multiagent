@@ -5,3 +5,4 @@ runs/
 results/
 __pycache__/
 .ipynb_checkpoints/
+events.*
