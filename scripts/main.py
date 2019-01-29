@@ -60,7 +60,7 @@ def train(PATH, environment, agent, timestamp, n_episodes=10000, max_t=1000, sco
                             agent.agents[0].noise_val, agent.agents[1].noise_val,
                             per_agent_rewards[0],per_agent_rewards[1])
 
-        if i_episode % 100 == 0:
+        if i_episode % 500 == 0:
             stats.print_epoch(i_episode, stats_format, buffer_len, agent.noise_weight)
             save_name = f"../results/{timestamp}_episode_{i_episode}"
             for i,save_agent in enumerate(agent.agents):

@@ -25,7 +25,7 @@ class MADDPG:
     """Interacts with and learns from the environment."""
 
     def __init__(self, action_size=2, random_seed=0, load_file=None, num_agents=2,
-                 buffer_size=int(1e5),batch_size=256,gamma=0.99, update_every=2, # 3e4, 128
+                 buffer_size=int(5e4),batch_size=128,gamma=0.99, update_every=2, # 3e4, 128
                  noise_start=1.0, noise_decay=1.0, evaluation_only=False):
         """Initialize an Agent object.
 
