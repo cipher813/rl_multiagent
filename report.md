@@ -33,7 +33,10 @@ In this project, we explored the Multi-Agent Deep Deterministic Policy Gradient 
 
 The MADDPG algorithm successfully trained in 3257 episodes as determined by a running average of the scores of previous 100 episodes over 0.5.  
 
-![alt text](https://github.com/cipher813/rl_multiagent/blob/master/charts/multiagent_results.png "Tennis Results with MADDPG")
+![alt text](https://github.com/cipher813/rl_multiagent/blob/master/charts/Average_Reward.png "Average Reward")
+
+![alt text](https://github.com/cipher813/rl_multiagent/blob/master/charts/Reward.png "Actual Reward")
+
 
 **DDPG**
 
