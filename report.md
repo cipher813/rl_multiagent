@@ -83,4 +83,8 @@ Each actor takes a state input for a single agent, whereas each critic takes a c
 
 **Environments**
 
-I would like to implement the MADDPG algorithm in different environments, such as the [Unity Soccer environment](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet) provided by Udacity.  Further environments can also be developed for testing using Unity's [ML Agents platform](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md).  
+I would like to implement the MADDPG algorithm in different environments, such as the [Unity Soccer environment](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet) provided by Udacity.  Further environments can also be developed for testing using Unity's [ML Agents platform](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md).
+
+**Algorithms**
+
+I would also like to investigate other relevant multi-agent algorithms and subject the Tennis environment to these, to compare and contrast performance against this MADDPG implementation.  
