@@ -4,9 +4,7 @@ Udacity Deep Reinforcement Learning Nanodegree
 Brian McMahon
 January 2019
 
-Code inspired by DDPG implmentation at
-https://github.com/partha746/DRLND_P2_Reacher_EnV
-and MADDPG implementation at https://github.com/danielnbarbosa/drlnd_collaboration_and_competition
+Code inspired by MADDPG implementation at https://github.com/danielnbarbosa/drlnd_collaboration_and_competition
 """
 import numpy as np
 import random
