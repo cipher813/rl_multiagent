@@ -22,14 +22,14 @@ According to the description provided by Udacity, two agents control rackets to 
 
 The observation space _for each agent_ consists of 8 variables pertaining to the position and velocity of ball and racket.  Two continuous actions are available, corresponding to movement towards/away from the net and jumping.  
 
-In order to solve the environment, agents must get an average score of +0.5 over the most recent 100 consecutive episodes, calculated by taking the maximum score over both agents per episode.  
+In order to solve the environment, agents must get an average score of +0.5 over the most recent 100 consecutive episodes, calculated by taking the maximum score over both agents per episode.  As in, the max of the sum of rewards for each agent is taken as the score for each episode.   
 
 For further information, see Udacity's [project github repo](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet).
 
 <a name="algorithm"></a>
 ## The Algorithm
 
-In this project, we explored the MADDPG policy, which is essentially a multiagent implementation of Deep Deterministic Policy Gradient ([DDPG](https://arxiv.org/abs/1509.02971)).  
+In this project, we explored the Multi-Agent Deep Deterministic Policy Gradient (MADDPG) policy as published by [OpenAI](https://arxiv.org/pdf/1706.02275.pdf), which is essentially a multiagent implementation of DeepMind's Deep Deterministic Policy Gradient ([DDPG](https://arxiv.org/abs/1509.02971)).  
 
 The MADDPG algorithm successfully trained in 3257 episodes as determined by a running average of the scores of previous 100 episodes over 0.5.  
 
@@ -39,27 +39,56 @@ The MADDPG algorithm successfully trained in 3257 episodes as determined by a ru
 
 DDPG was introduced by DeepMind in 2016 as an adaptation of Deep Q-Learning (DQN) to the continuous action domain.  The algorithm is described as an "actor-critic, model-free algorithm based on the deterministic policy gradient that can operate over continuous action spaces."  While DQN solves problems with high-dimensional observation (state) spaces, it can only handle discrete, low-dimensional action spaces.  
 
-For the multi-agent implementation, we can [share experience amongst agents to accelerate learning](https://ai.googleblog.com/2016/10/how-robots-can-acquire-new-skills-from.html).  We do this by using the same memory ReplayBuffer for all agents.
+An actor-critic agent uses function approximation to learn both a policy &pi; (actor) and a value function V (critic which learns to evaluate V<sub>&pi;</sub> using TD estimate).  The algorithm runs as follows:
+1. input state into actor and output the distribution over actions to take in that state &pi;(a|s;&theta;<sub>&pi;</sub>), returning experience (s, a, r, s').
+2. train critic using TD estimate of r + &gamma;V(s'; &theta;<sub>v</sub>) to obtain state function of policy V(s;&theta;<sub>v</sub>).
+3. calculate advantage function A(s,a) = r + &gamma;V(s';&theta;<sub>v</sub>) - V(s;&theta;<sub>v</sub>)
+4. Train actor using calculated advantage as baseline.  
 
-The base model in this repo utilizes the DDPG algorithm.  
+Where a is action, s is state, s' is next state, V is value, A is advantage, &pi; is policy, &theta; is neural network weights and &gamma; is discount variable.  
 
 **MADDPG**
 
-[...]
+MADDPG with introduced by OpenAi in January 2018, adding mult-agent capability (in both cooperative and competitive capacities) to the DDPG algorithm.  While training, the agents cooperate by sharing memory of experiences in a shared ReplayBuffer.  Upon completion of training, the model then determines actions locally and independently.  
+
+For this multi-agent implementation, we [share experience amongst agents to accelerate learning](https://ai.googleblog.com/2016/10/how-robots-can-acquire-new-skills-from.html) by using the same memory ReplayBuffer for all agents.
 
 <a name="hyperparameters"></a>
 ## Hyperparameters
 
 Hyperparameters are found in the same file as the implementation in which it is deployed.  For [MADDPG](https://github.com/cipher813/rl_multiagent/blob/master/scripts/agents/MADDPG.py), key hyperparameters include:
 
-[...]
+**Buffer Size.**  The ReplayBuffer memory size, as in the number of experiences that are remembered.   
+
+**Batch Size.**  The size of each training batch sampled at a time.    
+
+**Gamma.**  Discount factor for discounting past experiences (most recent experiences more highly rewarded as in less discount is applied).  
+
+**Tau.**  For soft update of target parameters.  
+
+**Learning Rate (Actor and Critic).**  Learning rates of actor and critic.  
+
+**Weight Decay.**  L2 weight decay (not used with value of 0.)
+
+**Update Every**
+
+**Noise Start**
+
+**Noise Decay**
 
 <a name="network"></a>
 # Neural Network Architecture
 
-[...]
+The DDPG algorithm utilizes a pair of neural networks, for each the actor and critic.  Common to both are a three layer neural network, receiving the state size of 33 variables corresponding to position, rotation, velocity and angular velocities of the arm as input.  The two layers are made up of 400 and 300 nodes.  Adam is used as the optimizer, and ReLU is used as the per-layer activations.  
+
+The **actor network** uses a tanh output layer mapping to distribution over action size vector of 4 numbers, corresponding to torque applicable to two joints, where each number is between -1 and 1.  
+
+The **critic network** is batch normalized and outputs a single value state policy function.
+
 
 <a name="nextsteps"></a>
 # Next Steps
 
-[...]  
+**Environments**
+
+I would like to implement the MADDPG algorithm in different environments, such as the [Unity Soccer environment](https://github.com/udacity/deep-reinforcement-learning/tree/master/p3_collab-compet) provided by Udacity.  Further environments can also be developed for testing using Unity's [ML Agents platform](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md).  
