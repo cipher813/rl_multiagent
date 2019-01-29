@@ -25,7 +25,7 @@ class MADDPG:
     """Interacts with and learns from the environment."""
 
     def __init__(self, action_size=2, random_seed=0, load_file=None, num_agents=2,
-                 buffer_size=int(5e4),batch_size=128,gamma=0.99, update_every=2, # 3e4, 128
+                 buffer_size=int(5e4),batch_size=128,gamma=0.99, update_every=2,
                  noise_start=1.0, noise_decay=1.0, evaluation_only=False):
         """Initialize an Agent object.
 
@@ -44,7 +44,6 @@ class MADDPG:
         self.noise_decay = noise_decay
         self.timestep = 0
         self.evaluation_only = evaluation_only
-        # self.seed = random.seed(random_seed)
 
         # create 2 agents, each with own actor and critic
         models = [LowDim2x(num_agents=num_agents) for _ in range(num_agents)]
@@ -55,7 +54,7 @@ class MADDPG:
         # shared replay buffer
         self.memory = ReplayBuffer(action_size, self.buffer_size, self.batch_size, random_seed)
 
-    def step(self, all_states, all_actions, all_rewards, all_next_states, all_dones):#, alpha=ALPHA, beta=BETA):
+    def step(self, all_states, all_actions, all_rewards, all_next_states, all_dones):
         """Save experience in replay memory, and use random sample from buffer to learn."""
         # reshape 2x24 into 1x48 dim vector
         all_states = all_states.reshape(1,-1)
@@ -198,7 +197,6 @@ class DDPG():
 
         # minimize loss
         critic_loss.backward()
-        # nn.utils.clip_grad_norm_(self.critic.parameters(),1)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
@@ -379,7 +377,3 @@ class LowDim2x():
         critic_input_size = (state_size+action_size)*num_agents
         self.critic = LowDimCritic(critic_input_size, seed).to(device)
         self.critic_target = LowDimCritic(critic_input_size, seed).to(device)
-
-        # output model architecture
-        print("Architecture Summary: Actor\n")
-        summary(self.actor, (state_size,))

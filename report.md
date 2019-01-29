@@ -31,7 +31,7 @@ For further information, see Udacity's [project github repo](https://github.com/
 
 In this project, we explored the Multi-Agent Deep Deterministic Policy Gradient (MADDPG) policy as published by [OpenAI](https://arxiv.org/pdf/1706.02275.pdf), which is essentially a multiagent implementation of DeepMind's Deep Deterministic Policy Gradient ([DDPG](https://arxiv.org/abs/1509.02971)).  
 
-The MADDPG algorithm successfully trained in 3257 episodes as determined by a running average of the scores of previous 100 episodes over 0.5.  
+The MADDPG algorithm successfully trained in 2676 episodes as determined by a running average of the scores of previous 100 episodes over 0.5.  
 
 ![alt text](https://github.com/cipher813/rl_multiagent/blob/master/charts/Average_Reward.png "Average Reward")
 
@@ -41,14 +41,6 @@ The MADDPG algorithm successfully trained in 3257 episodes as determined by a ru
 **DDPG**
 
 DDPG was introduced by DeepMind in 2016 as an adaptation of Deep Q-Learning (DQN) to the continuous action domain.  The algorithm is described as an "actor-critic, model-free algorithm based on the deterministic policy gradient that can operate over continuous action spaces."  While DQN solves problems with high-dimensional observation (state) spaces, it can only handle discrete, low-dimensional action spaces.  
-
-An actor-critic agent uses function approximation to learn both a policy &pi; (actor) and a value function V (critic which learns to evaluate V<sub>&pi;</sub> using TD estimate).  The algorithm runs as follows:
-1. input state into actor and output the distribution over actions to take in that state &pi;(a|s;&theta;<sub>&pi;</sub>), returning experience (s, a, r, s').
-2. train critic using TD estimate of r + &gamma;V(s'; &theta;<sub>v</sub>) to obtain state function of policy V(s;&theta;<sub>v</sub>).
-3. calculate advantage function A(s,a) = r + &gamma;V(s';&theta;<sub>v</sub>) - V(s;&theta;<sub>v</sub>)
-4. Train actor using calculated advantage as baseline.  
-
-Where a is action, s is state, s' is next state, V is value, A is advantage, &pi; is policy, &theta; is neural network weights and &gamma; is discount variable.  
 
 **MADDPG**
 
@@ -71,23 +63,20 @@ Hyperparameters are found in the same file as the implementation in which it is 
 
 **Learning Rate (Actor and Critic).**  Learning rates of actor and critic.  
 
-**Weight Decay.**  L2 weight decay (not used with value of 0.)
+**Weight Decay.**  L2 weight decay, which is not used (set at 0.0) as it negatively impacts the sparse data signal in this architecture.  
 
-**Update Every**
+**Update Every** The frequency experiences are added to the ReplayBuffer, in timesteps.  
 
-**Noise Start**
+**Noise Start** Add noise to agent actions.  
 
-**Noise Decay**
+**Noise Decay** The magnitude of the noise added.  
 
 <a name="network"></a>
 # Neural Network Architecture
 
-The DDPG algorithm utilizes a pair of neural networks, for each the actor and critic.  Common to both are a three layer neural network, receiving the state size of 33 variables corresponding to position, rotation, velocity and angular velocities of the arm as input.  The two layers are made up of 400 and 300 nodes.  Adam is used as the optimizer, and ReLU is used as the per-layer activations.  
+Agent (as policy model) and critic (as value model) each use a DDPG architecture, with three layers including hidden layers of 400 and 300 nodes.  Adam is used as the optimizer, and ReLU is used as the per-layer activations.  
 
-The **actor network** uses a tanh output layer mapping to distribution over action size vector of 4 numbers, corresponding to torque applicable to two joints, where each number is between -1 and 1.  
-
-The **critic network** is batch normalized and outputs a single value state policy function.
-
+Each actor takes a state input for a single agent, whereas each critic takes a concatenation of states and actions from all agents.  Local and target models are initialized with the same weights by using the same seed.  
 
 <a name="nextsteps"></a>
 # Next Steps
